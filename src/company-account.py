@@ -3,7 +3,12 @@ class CompanyAccount:
         self.company_name = company_name
         self.NIP = NIP
         self.balance = 0.0
-        self.NIP = NIP if self.is_pesel_valid(NIP) else "Invalid"
+        self.NIP = NIP if self.is_NIP_valid(NIP) else "Invalid"
+    def is_NIP_valid(NIP):
+        if NIP and len(NIP)==11: 
+            return True 
+        else: 
+            return False
     def przelew_przych(self,kwota):
         if kwota>0:
             self.balance=self.balance+kwota
