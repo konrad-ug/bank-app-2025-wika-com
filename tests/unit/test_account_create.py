@@ -13,5 +13,5 @@ class TestAccount:
         account = Account("John", "Doe","1234567891012")
         assert account.pesel =="Invalid"
     def test_pesel_non_digit(self):
-        account = Account("John", "Doe",None)
+        account = Account("John", "Doe", "")
         assert account.pesel =="Invalid"
