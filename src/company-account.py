@@ -1,3 +1,4 @@
+from src.account import Account
 class CompanyAccount:
     def __init__(self, company_name, NIP):
         self.company_name = company_name
