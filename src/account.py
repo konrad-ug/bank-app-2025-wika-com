@@ -35,11 +35,14 @@ class Account:
         if len(self.historia)>2:
             for i in range(1,4):
                 if self.historia[-i]<0:
-                    if len(self.historia)>4:
-                        for i in range(1,6):
-                            suma=suma+self.historia[i]
+                    if len(self.historia)>=5:
+                        suma=0
+                        for j in range(1,6):
+                            suma=suma+self.historia[-j]
                         if suma>kwota:
                             return True
+                        else:
+                            return False
                     return False
             return True
         else:
