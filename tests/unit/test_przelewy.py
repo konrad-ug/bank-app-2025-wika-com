@@ -22,5 +22,3 @@ class TestPrzelew:
         accountt.przelew_przych(320)
         accountt.przelew_wych(200,"e") 
         assert accountt.balance == 119.0
-
-#500 zł dwie strony
