@@ -12,3 +12,13 @@ class CompanyAccount(Account):
             return True 
         else: 
             return False
+        
+    def take_loan(self,kwota):
+        if self.balance > 2*kwota:
+            if -1775 not in self.historia:
+                return False
+            else:
+                self.balance=self.balance+kwota
+                return True
+        else:
+            return False
