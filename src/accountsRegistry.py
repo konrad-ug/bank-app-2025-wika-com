@@ -5,6 +5,8 @@ class AccountRegistry:
         self.accounts = []
 
     def add_account(self, account: PersonalAccount):
+        if self.find_by_pesel(account.pesel) is not None:
+            raise ValueError("Już istnieje konto z takim peselem")
         self.accounts.append(account)
 
     def find_by_pesel(self, pesel):
