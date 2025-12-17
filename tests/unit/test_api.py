@@ -1,7 +1,6 @@
-from fastapi.testclient import TestClient
-from api import app
+from app.api import app
 
-client = TestClient(app)
+client = app.test_client()
 
 def test_create_account_ok():
     response = client.post("/accounts", json={
