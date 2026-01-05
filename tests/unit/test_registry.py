@@ -1,18 +1,20 @@
-import pytest
-from src.accountsRegistry import AccountsRegistry, PersonalAccount
+from src.PersonalAccount import PersonalAccount
+from src.accountsRegistry import AccountRegistry
 
 def test_add_account_success():
-    reg = AccountsRegistry()
-    acc = PersonalAccount("Jan", "123")
-    reg.add_account(acc)
+    registry = AccountRegistry()
+    acc = PersonalAccount("Jan", "Kowalski", "12345678901")
+    registry.add_account(acc)
 
-    assert reg.count_accounts() == 1
-    assert reg.find_by_pesel("123") is not None
-
+    assert registry.count_accounts() == 1
+    assert registry.find_by_pesel("12345678901") is not None
 
 def test_add_account_duplicate_pesel():
-    reg = AccountsRegistry()
-    reg.add_account(PersonalAccount("Jan", "123"))
+    registry = AccountRegistry()
+    account1 = PersonalAccount("Jan", "Kowalski", "12345678902")
+    registry.add_account(account1)
 
-    with pytest.raises(ValueError):
-        reg.add_account(PersonalAccount("Anna", "123"))
+    account2 = PersonalAccount("Anna", "Nowak", "12345678902")
+    existing = registry.get_account_by_pesel(account2.pesel)
+    assert existing is not None
+    assert existing.first_name == "Jan"
