@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from src.PersonalAccount import PersonalAccount
 from src.accountsRegistry import AccountRegistry
+from src.account import Account
 
 app = Flask(__name__)
 registry = AccountRegistry()
@@ -12,7 +13,7 @@ def transfer(pesel):
     amount = data.get("amount")
     transfer_type = data.get("type")
 
-    account = registry.get_by_pesel(pesel)
+    account = registry.find_by_pesel(pesel)
     if not account:
         return jsonify({"detail": "Konto nie znalezione"}), 404
     if transfer_type not in ["incoming", "outgoing", "express"]:
@@ -31,7 +32,7 @@ def transfer(pesel):
 @app.route("/api/accounts", methods=['POST'])
 def create_account():
     data = request.get_json()
-    if registry.get_account_by_pesel(data["pesel"]):
+    if registry.find_by_pesel(data["pesel"]):
         return jsonify({"message": "Już istnieje konto o podanym PESELu"}), 409
     
     account = PersonalAccount(data["name"], data["surname"], data["pesel"])
@@ -59,7 +60,7 @@ def get_account_by_pesel(pesel):
 @app.route("/api/accounts/<pesel>", methods=['PATCH'])
 def update_account(pesel):
     data = request.get_json()
-    account = registry.get_account_by_pesel(pesel)
+    account = registry.find_by_pesel(pesel)
 
     if account:
         account.first_name = data["first_name"]
@@ -70,7 +71,7 @@ def update_account(pesel):
 
 @app.route("/api/accounts/<pesel>", methods=['DELETE'])
 def delete_account(pesel):
-    account = registry.get_account_by_pesel(pesel)
+    account = registry.find_by_pesel(pesel)
     if account:
         registry.remove(account)
         return jsonify({"message": "Konto usunięte"}), 200
@@ -79,7 +80,7 @@ def delete_account(pesel):
     
 @app.route("/api/accounts/<pesel>/transfer", methods=['POST'])
 def przelew_przych(pesel):
-    account = registry.get_account_by_pesel(pesel) 
+    account = registry.find_by_pesel(pesel) 
     if account is None:
         return 404
     

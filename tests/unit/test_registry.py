@@ -15,6 +15,6 @@ def test_add_account_duplicate_pesel():
     registry.add_account(account1)
 
     account2 = PersonalAccount("Anna", "Nowak", "12345678902")
-    existing = registry.get_account_by_pesel(account2.pesel)
+    existing = registry.find_by_pesel(account2.pesel)
     assert existing is not None
     assert existing.first_name == "Jan"
