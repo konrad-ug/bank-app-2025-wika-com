@@ -26,4 +26,3 @@ class Account:
             else:
                 return "Przelew nieudany"
             
-
