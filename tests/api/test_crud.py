@@ -5,8 +5,8 @@ BASE_URL = "http://127.0.0.1:5000"
 
 def create_account(pesel="12345678901"):
     payload = {
-        "name": "Test",
-        "surname": "User",
+        "first_name": "Test",
+        "last_name": "User",
         "pesel": pesel,
     }
     return requests.post(f"{BASE_URL}/api/accounts", json=payload)
@@ -24,23 +24,23 @@ def test_get_existing_account():
 
 def test_get_account_not_found():
     response = requests.get(f"{BASE_URL}/api/accounts/00000000000")
-    assert response.status_code == 404
+    assert response.status_code == 404 # ?????
 
 def test_update_account():
     pesel = "12345678911"
     create_account(pesel)
     update_payload = {
-        "name": "Updated",
-        "surname": "UserUpdated"
+        "first_name": "Updated",
+        "last_name": "UserUpdated"
     }
     response = requests.put(f"{BASE_URL}/api/accounts/{pesel}", json=update_payload)
     assert response.status_code == 200
     data = response.json()
-    assert data["name"] == "Updated"
-    assert data["surname"] == "UserUpdated"
+    assert data["first_name"] == "Updated"
+    assert data["last_name"] == "UserUpdated"
 
 def test_delete_account():
-    pesel = "12345678911"
+    pesel = "98765432100"
     create_account(pesel)
     response = requests.delete(f"{BASE_URL}/api/accounts/{pesel}")
     assert response.status_code == 204
@@ -48,7 +48,7 @@ def test_delete_account():
     assert check.status_code == 404
 
 def test_przelew_przych_ok():
-    pesel = "111"
+    pesel = "11111111111"
     create_account(pesel)
 
     r = requests.post(
@@ -60,13 +60,13 @@ def test_przelew_przych_ok():
 
 def test_nieistniejace_konto_transfer():
     r = requests.post(
-        f"{BASE_URL}/accounts/999/transfer",
+        f"{BASE_URL}/accounts/999999999/transfer",
         json={"amount": 100, "type": "incoming"}
     )
     assert r.status_code == 404
 
 def test_nieznany_typ_przelewu():
-    pesel = "222"
+    pesel = "22222222222"
     create_account(pesel)
 
     r = requests.post(
@@ -76,7 +76,7 @@ def test_nieznany_typ_przelewu():
     assert r.status_code == 400
 
 def test_brak_srodkow():
-    pesel = "333"
+    pesel = "33333333333"
     create_account(pesel)
 
     r = requests.post(
@@ -86,7 +86,7 @@ def test_brak_srodkow():
     assert r.status_code == 422
 
 def test_wych_ok():
-    pesel = "444"
+    pesel = "44444444444"
     create_account(pesel)
 
     requests.post(

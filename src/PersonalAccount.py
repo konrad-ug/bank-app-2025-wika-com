@@ -4,7 +4,7 @@ from src.smtp.smtp import SMTPClient
 class PersonalAccount(Account):
     def __init__(self, first_name, last_name,pesel):
         if not self.is_pesel_valid(pesel):
-            raise ValueError("Niepoprawny PESEL")
+            return "Invalid"
         self.first_name = first_name
         self.last_name = last_name
         self.pesel = pesel
