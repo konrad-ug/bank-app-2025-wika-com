@@ -78,9 +78,3 @@ def delete_account(pesel):
     else:
         return 404
     
-@app.route("/api/accounts/<pesel>/transfer", methods=['POST'])
-def przelew_przych(pesel):
-    account = registry.find_by_pesel(pesel) 
-    if account is None:
-        return 404
-    

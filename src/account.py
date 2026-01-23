@@ -1,3 +1,6 @@
+from datetime import date
+from src.smtp.smtp import SMTPClient
+
 class Account:
     def __init__(self):
         self.balance = 0.0
@@ -11,18 +14,23 @@ class Account:
             return "Przelew nieudany"
         
     def przelew_wych(self,kwota,typ):
-        if typ=="n":
-            if kwota>0.0 and kwota-self.balance<=0.0:
+        if kwota>0.0 and kwota-self.balance<=0.0:
+            if typ=="n":
                 self.balance=self.balance-kwota
                 self.historia.append(-kwota)
-            else:
-                return "Przelew nieudany"
-        elif typ=="e":
-            if kwota>0.0 and kwota-self.balance<=0.0:
+            elif typ=="e":
                 oplata=1
                 self.balance=self.balance-kwota-oplata
                 self.historia.append(-kwota)
                 self.historia.append(-oplata)
             else:
                 return "Przelew nieudany"
-            
+                #raise ValueError("Przelew nieudany")
+        else:
+            return "Przelew nieudany"
+            #raise ValueError("Przelew nieudany")
+    def send_history_via_email(self, email_address: str) -> bool:
+        today = date.today().isoformat()
+        subject = f"Account Transfer History {today}"
+        text = f"Company account history:{self.historia}"
+        return SMTPClient.send(subject, text, email_address)

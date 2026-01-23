@@ -1,5 +1,5 @@
 import json
-from app.api import app
+from app.api import app, registry
 import pytest
 from src.accountsRegistry import AccountRegistry
 from src.PersonalAccount import PersonalAccount
@@ -7,10 +7,11 @@ from src.PersonalAccount import PersonalAccount
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
+    registry.accounts = []
     with app.test_client() as client:
         yield client
 
-def test_create_account():
+def test_create_account(client):
     payload = {
         "name": "james",
         "surname": "hetfield",
@@ -24,10 +25,13 @@ def test_create_account():
     )
 
     assert response.status_code == 201
-    data = response.get_json()["message"] == "Konto stworzone"
+    assert response.get_json()["message"] == "Konto stworzone"
 
-@pytest.fixture
-def account():
-    acc = PersonalAccount("Jan", "Kowalski", "123")
-    acc.balance = 1000
-    return acc
+def test_get_all_accounts(client):
+    # Dodajemy konto bezpośrednio do rejestru, żeby sprawdzić GET
+    from src.PersonalAccount import PersonalAccount
+    registry.add_account(PersonalAccount("Jan", "Kowalski", "12345678901"))
+    
+    response = client.get("/api/accounts")
+    assert response.status_code == 200
+    assert len(response.get_json()) == 1

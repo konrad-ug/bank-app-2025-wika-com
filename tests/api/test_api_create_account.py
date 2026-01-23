@@ -5,8 +5,8 @@ def test_create_account():
     client = app.test_client()
 
     payload = {
-        "name": "james",
-        "surname": "hetfield",
+        "name": "Jan",
+        "surname": "Kowalski",
         "pesel": "89092909825"
     }
 
@@ -17,10 +17,13 @@ def test_create_account():
     )
 
     assert response.status_code == 201
+    assert response.get_json()["message"] == "Konto stworzone"
+
+    response_get = client.get(f"/api/accounts/{payload['pesel']}")
+    assert response_get.status_code == 200
 
     data = response.get_json()
-
-    assert data["name"] == "james"
-    assert data["surname"] == "hetfield"
+    assert data["name"] == "Jan"
+    assert data["surname"] == "Kowalski"
     assert data["pesel"] == "89092909825"
     assert data["balance"] == 0
