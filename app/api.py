@@ -9,10 +9,8 @@ registry = AccountRegistry()
 @app.post("/api/accounts/<pesel>/transfer")
 def transfer(pesel):
     data = request.get_json()
-
     amount = data.get("amount")
     transfer_type = data.get("type")
-
     account = registry.find_by_pesel(pesel)
     if not account:
         return jsonify({"detail": "Konto nie znalezione"}), 404
@@ -42,7 +40,7 @@ def create_account():
 @app.route("/api/accounts", methods=['GET'])
 def get_all_accounts():
     accounts = registry.get_all_accounts()
-    accounts_data = [{"first_name": acc.first_name, "last_name": acc.last_name, "pesel":acc.pesel, "balance": acc.balance} for acc in accounts]
+    accounts_data = [{"name": acc.first_name, "surname": acc.last_name, "pesel":acc.pesel, "balance": acc.balance} for acc in accounts]
     return jsonify(accounts_data), 200
 
 @app.route("/api/accounts/count", methods=['GET'])
@@ -55,20 +53,21 @@ def get_account_by_pesel(pesel):
     account = registry.find_by_pesel(pesel)
     if account:
         return jsonify({
-            "first_name": account.first_name, 
-            "last_name": account.last_name, 
+            "name": account.first_name, 
+            "surname": account.last_name, 
             "pesel": account.pesel, 
             "balance": account.balance}), 200
-    return 404
+    return jsonify({"message": "Konto nie znalezione"}),404
     
 @app.route("/api/accounts/<pesel>", methods=['PATCH'])
 def update_account(pesel):
     data = request.get_json()
     account = registry.find_by_pesel(pesel)
-
     if account:
-        account.first_name = data["first_name"]
-        account.last_name = data["last_name"]
+        if "name" in data:
+            account.first_name = data["name"]
+        if "surname" in data:
+            account.last_name = data["surname"]
         return jsonify({"message": "Konto zaktualizowane"}), 200
     else:
         return jsonify({"message": "Konto nie znalezione"}), 404
@@ -80,5 +79,5 @@ def delete_account(pesel):
         registry.remove(account)
         return jsonify({"message": "Konto usunięte"}), 200
     else:
-        return 404
+        return ({"message": "Nie znaleziono konta do usunięcia"}),404
     

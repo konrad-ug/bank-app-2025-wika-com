@@ -36,5 +36,4 @@ class PersonalAccount(Account):
         today = date.today().isoformat()
         subject = f"Account Transfer History {today}"
         text = f"Personal account history:{self.historia}"
-
         return SMTPClient.send(subject, text, email_address)

@@ -6,6 +6,7 @@ Scenario: User is able to create 2 accounts
     Then Number of accounts in registry equals: "2"
     And Account with pesel "89092909246" exists in registry
     And Account with pesel "79101011234" exists in registry
+    
 Scenario: User is able to update surname of already created account
     Given Account registry is empty
     And I create an account using name: "nata", last name: "haydamaky", pesel: "95092909876"
