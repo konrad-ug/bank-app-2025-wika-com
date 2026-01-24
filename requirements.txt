@@ -3,3 +3,4 @@ coverage
 flask
 requests
 pytest-mock
+pymongo

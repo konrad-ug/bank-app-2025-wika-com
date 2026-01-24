@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from src.PersonalAccount import PersonalAccount
 from src.accountsRegistry import AccountRegistry
 from src.account import Account
+from src.MongoAccounts import MongoAccountsRepository
 
 app = Flask(__name__)
 registry = AccountRegistry()
@@ -81,3 +82,18 @@ def delete_account(pesel):
     else:
         return ({"message": "Nie znaleziono konta do usunięcia"}),404
     
+repo = MongoAccountsRepository()
+
+@app.route("/api/accounts/save", methods=['POST'])
+def save_accounts():
+    accounts = registry.get_all_accounts()
+    repo.save_all(accounts)
+    return jsonify({"message": "Pomyślnie zapisano konta do bazy"}), 200
+
+@app.route("/api/accounts/load", methods=['POST'])
+def load_accounts():
+    accounts_from_db = repo.load_all()
+    registry.accounts = [] 
+    for acc in accounts_from_db:
+        registry.add_account(acc)
+    return jsonify({"message": f"Pomyślnie załadowano {len(accounts_from_db)}kont"}), 200
