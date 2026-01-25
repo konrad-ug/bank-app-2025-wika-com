@@ -20,6 +20,7 @@ def test_performance_create_and_delete_account():
         assert response_delete.elapsed.total_seconds() < MAX_TIME
 
 def test_performance_multiple_transfers():
+    requests.post(f"{BASE_URL}/accounts/clear")
     pesel = "11111111111"
     requests.post(f"{BASE_URL}/accounts", json={
         "first_name": "Jan", "last_name": "Kowalski", "pesel": pesel

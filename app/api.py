@@ -3,6 +3,7 @@ from src.PersonalAccount import PersonalAccount
 from src.accountsRegistry import AccountRegistry
 from src.account import Account
 from src.MongoAccounts import MongoAccountsRepository
+from src.accountsRegistry import AccountRegistry
 
 app = Flask(__name__)
 registry = AccountRegistry()
@@ -24,7 +25,7 @@ def transfer(pesel):
             account.przelew_wych(amount,"n")
         elif transfer_type == "express":
             account.przelew_wych(amount,"e")
-        return jsonify({"message": "Zlecenie przyjęto do realizacji"}), 200
+        return jsonify({"message": "Zlecenie przyjęto"}), 200
     except ValueError:
         return jsonify({"detail": "Brak wystarczających środków"}), 422
     
@@ -33,7 +34,6 @@ def create_account():
     data = request.get_json()
     if registry.find_by_pesel(data["pesel"]):
         return jsonify({"message": "Już istnieje konto o podanym PESELu"}), 409
-    
     account = PersonalAccount(data["first_name"], data["last_name"], data["pesel"])
     registry.add_account(account)
     return jsonify({"message": "Konto stworzone"}), 201
@@ -41,8 +41,8 @@ def create_account():
 @app.route("/api/accounts", methods=['GET'])
 def get_all_accounts():
     accounts = registry.get_all_accounts()
-    accounts_data = [{"name": acc.first_name, "surname": acc.last_name, "pesel":acc.pesel, "balance": acc.balance} for acc in accounts]
-    return jsonify(accounts_data), 200
+    # accounts_data = [{"name": acc.first_name, "surname": acc.last_name, "pesel":acc.pesel, "balance": acc.balance} for acc in accounts]
+    return jsonify([acc.to_dict() for acc in accounts]), 200
 
 @app.route("/api/accounts/count", methods=['GET'])
 def get_account_count():
@@ -97,3 +97,8 @@ def load_accounts():
     for acc in accounts_from_db:
         registry.add_account(acc)
     return jsonify({"message": f"Pomyślnie załadowano {len(accounts_from_db)}kont"}), 200
+
+@app.route("/api/accounts/clear", methods=['POST'])
+def clear_accounts():
+    registry.accounts=[]
+    return jsonify({"message": "Rejestr wyczyszczony"}), 200

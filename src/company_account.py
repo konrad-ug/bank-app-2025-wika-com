@@ -6,16 +6,25 @@ from datetime import date
 
 class CompanyAccount(Account):
     def __init__(self, company_name, nip):
-        super().__init__()
-        self.company_name = company_name
-        self.nip = nip
         if not self.is_NIP_valid(nip):
+            # self.nip = "Invalid"
             raise ValueError("Niepoprawny format NIP!")
         if not self.validate_nip(nip):
             raise ValueError("Company not registered!!")
+        self.company_name = company_name
+        self.nip = nip
+        super().__init__()
+        
+    def to_dict(self):
+        return {
+            "name": self.company_name,
+            "nip": self.nip,
+            "balance": self.balance,
+            "historia": self.historia
+        }
 
     def is_NIP_valid(self,NIP):
-        if NIP and len(NIP)==10: 
+        if NIP and len(NIP)==10 and NIP.isdigit(): 
             return True 
         else: 
             return False
@@ -34,7 +43,7 @@ class CompanyAccount(Account):
     def send_history_via_email(self, email_address) -> bool:
         today = date.today().isoformat()
         subject =f"Account Transfer History {today}"
-        text = f"Company account history {self.historia}"
+        text = f"Company account history:{self.historia}"
         return SMTPClient.send(subject, text, email_address)
     
     @staticmethod
@@ -51,4 +60,3 @@ class CompanyAccount(Account):
         if not subject:
             return False
         return subject.get("statusVat") == "Czynny"
-    

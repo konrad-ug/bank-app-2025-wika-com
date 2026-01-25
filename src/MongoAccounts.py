@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from src.PersonalAccount import PersonalAccount
+from src.company_account import CompanyAccount
 
 class MongoAccountsRepository:
     def __init__(self):
@@ -12,13 +13,7 @@ class MongoAccountsRepository:
         for account in accounts:
             self._collection.update_one(
                 {"pesel": account.pesel},
-                {"$set": {
-                    "name": account.first_name,
-                    "surname": account.last_name,
-                    "pesel": account.pesel,
-                    "balance": account.balance,
-                    "historia": account.historia
-                }},
+                {"$set": account.to_dict()},
                 upsert=True,
             )
 
@@ -26,6 +21,10 @@ class MongoAccountsRepository:
         db_accounts = list(self._collection.find({}))
         accounts_list = []
         for acc_data in db_accounts:
+            # if "nip" in acc_data:
+            #     acc = CompanyAccount(acc_data["name"], acc_data["nip"])
+            # else:
+            #     acc = PersonalAccount(acc_data["name"], acc_data["surname"], acc_data["pesel"])
             acc = PersonalAccount(acc_data["name"], acc_data["surname"], acc_data["pesel"])
             acc.balance = float(acc_data["balance"])
             acc.historia = acc_data.get("historia", [])

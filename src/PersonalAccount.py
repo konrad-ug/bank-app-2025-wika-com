@@ -3,12 +3,24 @@ from datetime import date
 from src.smtp.smtp import SMTPClient
 class PersonalAccount(Account):
     def __init__(self, first_name, last_name,pesel):
-        if not self.is_pesel_valid(pesel):
-            return "Invalid"
         self.first_name = first_name
         self.last_name = last_name
-        self.pesel = pesel
+        if self.is_pesel_valid(pesel):
+            # return "Invalid"
+            self.pesel = pesel
+        else:
+            self.pesel = "Invalid"
+        # self.pesel = pesel
         super().__init__()
+
+    def to_dict(self):
+        return {
+            "name": self.first_name,
+            "surname": self.last_name,
+            "pesel": self.pesel,
+            "balance": self.balance,
+            "historia": self.historia
+        }
 
     def is_pesel_valid(self,pesel):
         if pesel and len(pesel)==11:

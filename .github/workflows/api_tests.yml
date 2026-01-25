@@ -13,17 +13,17 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-      - name: Start flask
-        run: |
-          export FLASK_APP=app/api.py
-          export PYTHONPATH=$GITHUB_WORKSPACE
-          flask run &
-          sleep 5 # Dajmy chwilę aplikacji na wystartowanie
-      - name: Execute API tests
-        run: |
-          python3 -m pytest tests/api
       - name: start mongo
         run: |
           docker compose -f mongo.yml up -d
       - name: Wait for Mongo
         run: sleep 10
+      - name: Start flask
+        run: |
+          export FLASK_APP=app/api.py
+          export PYTHONPATH=$GITHUB_WORKSPACE
+          flask run &
+          sleep 5
+      - name: Execute API tests
+        run: |
+          python3 -m pytest tests/api

@@ -22,6 +22,7 @@ class TestPrzelew:
         accountt.przelew_przych(320)
         accountt.przelew_wych(200,"e") 
         assert accountt.balance == 119.0
+        assert accountt.historia == [320, -200, -1]
     
     def test_przelew_wych_brak_srodkow(self, accountt):
         accountt.przelew_przych(100)

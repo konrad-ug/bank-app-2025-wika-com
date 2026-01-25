@@ -3,20 +3,20 @@ import pytest
 
 class TestPrzelew:
     @pytest.fixture
-    def accountt(self):
-        accountt = CompanyAccount("Netflix","1234567891")
-        return accountt
-    # def accountt(self, mocker):
-    #     mock_response = {
-    #         "result": {
-    #             "subject": {"statusVat": "Czynny"}
-    #         }
-    #     }
-    #     mocker.patch(
-    #         "src.company_account.requests.get",
-    #         return_value=mocker.Mock(json=lambda: mock_response)
-    #     )
-    #     return CompanyAccount("Netflix", "1234567891")
+    # def accountt(self):
+    #     accountt = CompanyAccount("Netflix","1234567891")
+    #     return accountt
+    def accountt(self, mocker):
+        mock_response = {
+            "result": {
+                "subject": {"statusVat": "Czynny"}
+            }
+        }
+        mocker.patch(
+            "src.company_account.requests.get",
+            return_value=mocker.Mock(json=lambda: mock_response)
+        )
+        return CompanyAccount("Netflix", "1234567891")
     
     def test_przelew_przy(self,accountt):
         accountt.przelew_przych(120)

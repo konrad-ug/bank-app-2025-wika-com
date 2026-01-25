@@ -15,8 +15,8 @@ def account():
 
 def test_create_account_ok(client):
     response = client.post("/api/accounts", json={
-        "name": "Jan",
-        "surname": "Kowalski",
+        "first_name": "Jan",
+        "last_name": "Kowalski",
         "pesel": "12345678901"
     })
     assert response.status_code == 201
@@ -24,13 +24,15 @@ def test_create_account_ok(client):
 
 def test_create_account_duplicate(client):
     payload={
-        "name": "Jan",
-        "surname": "Kowalski",
+        "first_name": "Jan",
+        "last_name": "Kowalski",
         "pesel": "12345678901"
     }
     response = client.post("/api/accounts", json=payload)
-    assert response.status_code == 409
-    assert response.json()["message"] == "Już istnieje konto o podanym PESELu"
+    assert response.status_code == 201
+    second_response = client.post("/api/accounts", json=payload)
+    assert second_response.status_code == 409
+    assert second_response.get_json()["message"] == "Już istnieje konto o podanym PESELu"
 
 def test_incoming_transfer_ok(client, account):
     # account.pesel = "12345678901"
@@ -40,7 +42,7 @@ def test_incoming_transfer_ok(client, account):
         json={"amount": 500, "type": "incoming"}
     )
     assert response.status_code == 200
-    assert response.get_json()["message"] == "Zlecenie przyjęto do realizacji"
+    assert response.get_json()["message"] == "Zlecenie przyjęto"
     assert account.balance == 500
 
 def test_outgoing_transfer_no_funds(client, account):

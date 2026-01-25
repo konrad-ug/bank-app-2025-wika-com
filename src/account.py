@@ -20,15 +20,16 @@ class Account:
                 self.historia.append(-kwota)
             elif typ=="e":
                 oplata=1
-                self.balance=self.balance-kwota-oplata
-                self.historia.append(-kwota)
-                self.historia.append(-oplata)
+                if self.balance >= kwota + oplata:
+                    self.balance=self.balance-kwota-oplata
+                    self.historia.append(-kwota)
+                    self.historia.append(-oplata)
             else:
-                return "Przelew nieudany"
-                #raise ValueError("Przelew nieudany")
+                # return "Przelew nieudany"
+                raise ValueError("Brak wystarczających środków")
         else:
-            return "Przelew nieudany"
-            #raise ValueError("Przelew nieudany")
+            # return "Przelew nieudany"
+            raise ValueError("Brak wystarczających środków")
     def send_history_via_email(self, email_address: str) -> bool:
         today = date.today().isoformat()
         subject = f"Account Transfer History {today}"

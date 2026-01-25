@@ -3,17 +3,17 @@ import pytest
 
 class TestPrzelew:
     @pytest.fixture
-    def accountt(self):
-        accountt = CompanyAccount("Netflix","1234567891")
-        return accountt
+    # def accountt(self):
+    #     accountt = CompanyAccount("Netflix","1234567891")
+    #     return accountt
     
-    # def accountt(self, mocker):
-    #     mock_response = {"result": {"subject": {"statusVat": "Czynny"}}}
-    #     mocker.patch(
-    #         "src.company_account.requests.get",
-    #         return_value=mocker.Mock(json=lambda: mock_response)
-    #     )
-    #     return CompanyAccount("Netflix", "1234567891")
+    def accountt(self, mocker):
+        mock_response = {"result": {"subject": {"statusVat": "Czynny"}}}
+        mocker.patch(
+            "src.company_account.requests.get",
+            return_value=mocker.Mock(json=lambda: mock_response)
+        )
+        return CompanyAccount("Netflix", "1234567891")
     
     def test_hist_przych(self,accountt):
         accountt.przelew_przych(120)
@@ -45,7 +45,7 @@ class TestPrzelew:
         )
 
         acc = CompanyAccount("Firma", "8461627563")
-        acc.history = [5000, -1000, 500]
+        acc.historia = [5000, -1000, 500]
 
         mock_send = mocker.patch(
             "src.company_account.SMTPClient.send",

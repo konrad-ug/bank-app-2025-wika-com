@@ -19,3 +19,12 @@ class TestAccount:
     def test_pesel_non_digit(self):
         account = PersonalAccount("John", "Doe", "")
         assert account.pesel =="Invalid"
+    
+    def test_to_dict_conversion(self):
+        account = PersonalAccount("John", "Doe", "12345678910")
+        data = account.to_dict()
+        assert data["name"] == "John"
+        assert data["surname"] == "Doe"
+        assert data["pesel"] == "12345678910"
+        assert "balance" in data
+        assert "historia" in data

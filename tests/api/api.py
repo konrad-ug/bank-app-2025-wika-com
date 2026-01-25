@@ -13,8 +13,8 @@ def client():
 
 def test_create_account(client):
     payload = {
-        "name": "james",
-        "surname": "hetfield",
+        "first_name": "james",
+        "last_name": "hetfield",
         "pesel": "89092909825"
     }
 

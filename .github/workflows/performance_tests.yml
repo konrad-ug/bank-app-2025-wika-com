@@ -13,6 +13,9 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+      - name: start mongo
+        run: |
+          docker compose -f mongo.yml up -d
       - name: Start flask
         run: |
           export FLASK_APP=app/api.py

@@ -5,8 +5,8 @@ URL = "http://localhost:5000"
 @step('I create an account using name: "{name}", last name: "{last_name}", pesel: "{pesel}"')
 def create_account(context, name, last_name, pesel):
     json_body = { 
-    "name": f"{name}",
-    "surname": f"{last_name}",
+    "first_name": f"{name}",
+    "last_name": f"{last_name}",
     "pesel": pesel
     }
     create_resp = requests.post(URL + "/api/accounts", json = json_body)
@@ -71,4 +71,14 @@ def perform_transfer(context, type, pesel, amount):
         "type": type
     }
     response = requests.post(URL + f"/api/accounts/{pesel}/transfer", json=json_body)
+    assert response.status_code == 200
+    
+@step('I save accounts to database')
+def save_to_db(context):
+    response = requests.post(URL + "/api/accounts/save")
+    assert response.status_code == 200
+
+@step('I load accounts from database')
+def load_from_db(context):
+    response = requests.post(URL + "/api/accounts/load")
     assert response.status_code == 200
