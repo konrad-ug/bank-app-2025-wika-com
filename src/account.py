@@ -36,5 +36,5 @@ class Account:
     def send_history_via_email(self, email_address: str) -> bool:
         today = date.today().isoformat()
         subject = f"Account Transfer History {today}"
-        text = f"Company account history:{self.historia}"
+        text = f"Company account history: {self.historia}"
         return SMTPClient.send(subject, text, email_address)

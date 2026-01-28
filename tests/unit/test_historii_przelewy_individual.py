@@ -37,7 +37,7 @@ class TestPrzelew:
 
         args, _ = mock_send.call_args
         assert args[0].startswith("Account Transfer History")
-        assert args[1] == "Personal account history:[150.0, -50.0]"
+        assert args[1] == "Personal account history: [150.0, -50.0]"
         assert args[2] == "test@email.com"
     def test_send_history_fail(self,mocker, accountt):
         mocker.patch(

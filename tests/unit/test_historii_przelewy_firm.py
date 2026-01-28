@@ -54,5 +54,5 @@ class TestPrzelew:
         result = acc.send_history_via_email("firma@email.com")
         assert result is True
         args, _ = mock_send.call_args
-        assert args[1] == "Company account history:[5000, -1000, 500]"
+        assert args[1] == "Company account history: [5000, -1000, 500]"
         
