@@ -29,7 +29,7 @@ def test_get_account_by_pesel_success(client):
         "pesel": "93210112345"
     }
     client.post("/api/accounts", json=payload)
-    response = client.get("/api/accounts/90010112345")
+    response = client.get("/api/accounts/93210112345")
     assert response.status_code == 200
     data = response.get_json()
     assert data["name"] == "Alicja"
@@ -54,7 +54,7 @@ def test_update_account_success(client):
         "last_name": "Morawski",
         "pesel": "12345678901"
     })
-    response = client.patch("/api/accounts/123", json={
+    response = client.patch("/api/accounts/12345678901", json={
         "name": "Tom",
         "surname": "Morawski"
     })
