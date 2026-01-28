@@ -8,10 +8,13 @@ class TestKredyt:
     #     return accountt
     @pytest.fixture
     def accountt(self, mocker):
-        mock_response = {"result": {"subject": {"statusVat": "Czynny"}}}
+        mock_obj = mocker.Mock()
+        mock_obj.status_code = 200
+        mock_obj.json.return_value = {"result": {"subject": {"statusVat": "Czynny"}}}
+        mock_obj.text = '{"statusVat": "Czynny"}'
         mocker.patch(
             "src.company_account.requests.get",
-            return_value=mocker.Mock(json=lambda: mock_response)
+            return_value=mock_obj
         )
         return CompanyAccount("Netflix", "1234567891")
 

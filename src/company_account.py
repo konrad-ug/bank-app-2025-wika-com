@@ -4,15 +4,23 @@ import os
 import requests
 from datetime import date
 
+#Feature 7
 class CompanyAccount(Account):
     def __init__(self, company_name, nip):
-        if not self.is_NIP_valid(nip):
-            # self.nip = "Invalid"
-            raise ValueError("Niepoprawny format NIP!")
-        if not self.validate_nip(nip):
-            raise ValueError("Company not registered!!")
+        # if not self.is_NIP_valid(nip):
+        #     # raise ValueError("Niepoprawny format NIP!")
+        #     self.nip = "Invalid"
+        # if not self.validate_nip(nip):
+        #     # raise ValueError("Company not registered!!")
+        #     self.nip = "Invalid"
+        if nip is not None and len(nip) == 10 and nip.isdigit():
+            if self.validate_nip(nip):
+                self.nip = nip
+            else:
+                raise ValueError("Company not registered!!")
+        else:
+            self.nip = "Invalid"
         self.company_name = company_name
-        self.nip = nip
         super().__init__()
         
     def to_dict(self):
@@ -28,7 +36,8 @@ class CompanyAccount(Account):
             return True 
         else: 
             return False
-        
+    
+    #Feature 13
     def take_loan(self,kwota):
         if self.balance > 2*kwota:
             if -1775 not in self.historia:
@@ -55,6 +64,9 @@ class CompanyAccount(Account):
         today = date.today().isoformat()
         full_url = f"{url}/api/search/nip/{nip}?date={today}"
         response = requests.get(full_url)
+        print("MF API Response for",{nip},{response.text})
+        if response.status_code != 200:
+                return False
         data = response.json()
         subject = data.get("result", {}).get("subject")
         if not subject:

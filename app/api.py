@@ -5,9 +5,11 @@ from src.account import Account
 from src.MongoAccounts import MongoAccountsRepository
 from src.accountsRegistry import AccountRegistry
 
+#Feature 15
 app = Flask(__name__)
 registry = AccountRegistry()
 
+#Feature 17
 @app.post("/api/accounts/<pesel>/transfer")
 def transfer(pesel):
     data = request.get_json()
@@ -37,6 +39,7 @@ def transfer(pesel):
 @app.route("/api/accounts", methods=['POST'])
 def create_account():
     data = request.get_json()
+    #Feature 16
     if registry.find_by_pesel(data["pesel"]):
         return jsonify({"message": "Już istnieje konto o podanym PESELu"}), 409
     account = PersonalAccount(data["first_name"], data["last_name"], data["pesel"])

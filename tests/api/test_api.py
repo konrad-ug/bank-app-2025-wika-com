@@ -1,6 +1,7 @@
 from app.api import app, registry
 from src.PersonalAccount import PersonalAccount
 import pytest
+# import requests
 
 @pytest.fixture
 def client():
@@ -33,10 +34,12 @@ def test_get_account_by_pesel_success(client):
     assert response.status_code == 200
     data = response.get_json()
     assert data["first_name"] == "Alicja"
-    # assert data["name"] == "Alicja"
     assert data["last_name"] == "Nowak"
-    # assert data["surname"] == "Nowak"
     assert data["pesel"] == "93210112345"
+
+def test_get_account_not_found(client):
+    response = client.get("/api/accounts/00000000000")
+    assert response.status_code == 404
 
 def test_create_account_duplicate(client):
     payload={
@@ -60,12 +63,24 @@ def test_update_account_success(client):
         "name": "Tom",
         "surname": "Morawski"
     })
-
     assert response.status_code == 200
+    updated = client.get(f"/api/accounts/12345678901").get_json()
+    assert updated["first_name"] == "Tom"
+    assert updated["last_name"] == "Morawski"
     assert response.get_json()["message"] == "Konto zaktualizowane"
 
+def test_delete_account(client):
+    pesel = "98765432100"
+    client.post("/api/accounts", json={
+        "first_name": "Jan", "last_name": "Kowalski", "pesel": pesel
+    })
+    response = client.delete(f"/api/accounts/{pesel}")
+    assert response.status_code == 200
+    assert response.get_json()["message"] == "Konto usunięte"
+    check = client.get(f"/api/accounts/{pesel}")
+    assert check.status_code == 404
+
 def test_incoming_transfer_ok(client, account):
-    # account.pesel = "12345678901"
     registry.add_account(account)
     response = client.post(
         f"/api/accounts/{account.pesel}/transfer",
@@ -74,6 +89,13 @@ def test_incoming_transfer_ok(client, account):
     assert response.status_code == 200
     assert response.get_json()["message"] == "Zlecenie przyjęto"
     assert account.balance == 500
+
+def test_nieistniejace_konto_transfer(client):
+    r = client.post(
+        "/api/accounts/999999999/transfer",
+        json={"amount": 100, "type": "incoming"}
+    )
+    assert r.status_code == 404
 
 def test_outgoing_transfer_no_funds(client, account):
     account.balance = 1000
@@ -86,14 +108,6 @@ def test_outgoing_transfer_no_funds(client, account):
     assert response.get_json()["detail"] == "Brak wystarczających środków"
     assert account.balance == 1000
 
-def test_transfer_account_not_found(client):
-    response = client.post(
-        "/api/accounts/99999999999/transfer",
-        json={"amount": 100, "type": "incoming"}
-    )
-    assert response.status_code == 404
-    assert response.get_json()["detail"] == "Konto nie znalezione"
-
 def test_express_transfer_api(client, account):
     account.balance = 100
     registry.add_account(account)
@@ -104,12 +118,10 @@ def test_express_transfer_api(client, account):
 def test_unknown_transfer_type(client, account):
     registry.accounts = []
     registry.add_account(account)
-
     payload = {
         "amount": 100, 
         "type": "magic"
     }
-
     response = client.post(
         f"/api/accounts/{account.pesel}/transfer",
         json=payload

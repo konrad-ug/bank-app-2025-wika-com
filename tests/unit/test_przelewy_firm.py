@@ -7,14 +7,18 @@ class TestPrzelew:
     #     accountt = CompanyAccount("Netflix","1234567891")
     #     return accountt
     def accountt(self, mocker):
-        mock_response = {
+        mock_data = {
             "result": {
                 "subject": {"statusVat": "Czynny"}
             }
         }
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = mock_data
+        mock_response.status_code = 200
+        mock_response.text = '{"statusVat": "Czynny"}'
         mocker.patch(
             "src.company_account.requests.get",
-            return_value=mocker.Mock(json=lambda: mock_response)
+            return_value=mock_response
         )
         return CompanyAccount("Netflix", "1234567891")
     
@@ -23,6 +27,10 @@ class TestPrzelew:
         assert accountt.balance == 120.0
         accountt.przelew_przych(200)
         assert accountt.balance == 320.0
+
+    def test_przelew_przych_nieudany(self, accountt):
+        res = accountt.przelew_przych(-100)
+        assert res =="Przelew nieudany"
 
     def test_przelew_wy(self,accountt):
         accountt.przelew_przych(320)

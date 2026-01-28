@@ -34,3 +34,12 @@ class TestPrzelew:
         accountt.przelew_przych(100)
         with pytest.raises(ValueError, match="Brak wystarczających środków"):
             accountt.przelew_wych(200, "n")
+
+    def test_przelew_wych_nieznany_typ(self, accountt):
+        accountt.przelew_przych(100)
+        with pytest.raises(ValueError, match="Nieznany typ przelewu"):
+            accountt.przelew_wych(50, "x")
+    
+    def test_przelew_wych_ujemna_kwota(self, accountt):
+        with pytest.raises(ValueError, match="Brak wystarczających środków"):
+            accountt.przelew_wych(-50, "n")

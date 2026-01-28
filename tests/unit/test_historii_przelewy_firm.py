@@ -8,10 +8,13 @@ class TestPrzelew:
     #     return accountt
     
     def accountt(self, mocker):
-        mock_response = {"result": {"subject": {"statusVat": "Czynny"}}}
+        mock_response = mocker.Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"result": {"subject": {"statusVat": "Czynny"}}}
+        mock_response.text = '{"statusVat": "Czynny"}'
         mocker.patch(
             "src.company_account.requests.get",
-            return_value=mocker.Mock(json=lambda: mock_response)
+            return_value=mock_response
         )
         return CompanyAccount("Netflix", "1234567891")
     
@@ -33,16 +36,12 @@ class TestPrzelew:
         assert accountt.historia == [200,120,-200,-1]
 
     def test_company_account_send_history(self,mocker):
-        mocker.patch(
-            "src.company_account.requests.get",
-            return_value=mocker.Mock(
-                json=lambda: {
-                    "result": {
-                        "subject": {"statusVat": "Czynny"}
-                    }
-                }
-            )
-        )
+        mock_response = mocker.Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"result": {"subject": {"statusVat": "Czynny"}}}
+        mock_response.text = "OK"
+        
+        mocker.patch("src.company_account.requests.get", return_value=mock_response)
 
         acc = CompanyAccount("Firma", "8461627563")
         acc.historia = [5000, -1000, 500]
