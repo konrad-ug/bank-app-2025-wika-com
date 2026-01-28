@@ -18,8 +18,8 @@ def test_get_existing_account():
     assert response.status_code == 200
     data = response.json()
     assert data["pesel"] == pesel
-    assert data["name"] == "Test"
-    assert data["surname"] == "User"
+    assert data["first_name"] == "Test"
+    assert data["last_name"] == "User"
     assert data["balance"] == 0
 
 def test_get_account_not_found():
