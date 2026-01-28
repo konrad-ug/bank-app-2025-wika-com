@@ -36,8 +36,8 @@ def test_update_account():
     response = requests.patch(f"{BASE_URL}/api/accounts/{pesel}", json=update_payload)
     assert response.status_code == 200
     data = requests.get(f"{BASE_URL}/api/accounts/{pesel}").json()
-    assert data["name"] == "Updated"
-    assert data["surname"] == "UserUpdated"
+    assert data["first_name"] == "Updated"
+    assert data["last_name"] == "UserUpdated"
 
 def test_delete_account():
     pesel = "98765432100"

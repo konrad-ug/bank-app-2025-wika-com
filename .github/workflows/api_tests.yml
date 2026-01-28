@@ -16,7 +16,6 @@ jobs:
       - name: start mongo
         run: |
           docker compose -f mongo.yml up -d
-          sleep 10
       - name: Wait for Mongo
         run: sleep 10
       - name: Start flask
