@@ -28,7 +28,7 @@ jobs:
         run: |
           docker rm -f mongo_container || true
           docker run -d -p 27017:27017 --name mongo_container mongo:latest
-          sleep 5
+          sleep 10
       - name: Execute API tests
         run: |
           python3 -m pytest tests/api

@@ -59,8 +59,10 @@ def get_account_by_pesel(pesel):
     account = registry.find_by_pesel(pesel)
     if account:
         return jsonify({
-            "name": account.first_name, 
-            "surname": account.last_name, 
+            "first_name": account.first_name, 
+            # "name": account.first_name, 
+            "last_name": account.last_name, 
+            # "surname": account.last_name, 
             "pesel": account.pesel, 
             "balance": account.balance}), 200
     return jsonify({"message": "Konto nie znalezione"}),404

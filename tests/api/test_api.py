@@ -32,8 +32,10 @@ def test_get_account_by_pesel_success(client):
     response = client.get("/api/accounts/93210112345")
     assert response.status_code == 200
     data = response.get_json()
-    assert data["name"] == "Alicja"
-    assert data["surname"] == "Nowak"
+    assert data["first_name"] == "Alicja"
+    # assert data["name"] == "Alicja"
+    assert data["last_name"] == "Nowak"
+    # assert data["surname"] == "Nowak"
     assert data["pesel"] == "93210112345"
 
 def test_create_account_duplicate(client):

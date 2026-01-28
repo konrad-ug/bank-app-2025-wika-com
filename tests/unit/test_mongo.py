@@ -12,7 +12,7 @@ def test_mongo_save_all_clears_collection(mocker):
     mock_collection.delete_many.assert_called_once_with({})
     assert mock_collection.update_one.called
 
-def test_mongo_load_all_returns_correct_objects(mocker):
+def test_mongo_load_all_returns_correct(mocker):
     mock_collection = mocker.Mock()
     mock_collection.find.return_value = [
         {
