@@ -22,6 +22,11 @@ jobs:
           export PYTHONPATH=$GITHUB_WORKSPACE
           flask run &
           sleep 5
+      - name: Start MongoDB
+        run: |
+          docker rm -f mongo_container || true
+          docker run -d -p 27017:27017 --name mongo_container mongo:latest
+          sleep 10
       - name: Execute Performance tests
         run: |
           python3 -m pytest tests/perf
