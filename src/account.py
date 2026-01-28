@@ -24,11 +24,11 @@ class Account:
                     self.balance=self.balance-kwota-oplata
                     self.historia.append(-kwota)
                     self.historia.append(-oplata)
+                else:
+                    raise ValueError("Brak wystarczających środków")
             else:
-                # return "Przelew nieudany"
-                raise ValueError("Brak wystarczających środków")
+                raise ValueError("Nieznany typ przelewu")
         else:
-            # return "Przelew nieudany"
             raise ValueError("Brak wystarczających środków")
     def send_history_via_email(self, email_address: str) -> bool:
         today = date.today().isoformat()

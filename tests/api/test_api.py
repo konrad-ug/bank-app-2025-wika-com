@@ -22,6 +22,20 @@ def test_create_account_ok(client):
     assert response.status_code == 201
     assert response.get_json()["message"] == "Konto stworzone"
 
+def test_get_account_by_pesel_success(client):
+    payload = {
+        "first_name": "Alicja",
+        "last_name": "Nowak",
+        "pesel": "93210112345"
+    }
+    client.post("/api/accounts", json=payload)
+    response = client.get("/api/accounts/90010112345")
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["name"] == "Alicja"
+    assert data["surname"] == "Nowak"
+    assert data["pesel"] == "90010112345"
+
 def test_create_account_duplicate(client):
     payload={
         "first_name": "Jan",
@@ -33,6 +47,20 @@ def test_create_account_duplicate(client):
     second_response = client.post("/api/accounts", json=payload)
     assert second_response.status_code == 409
     assert second_response.get_json()["message"] == "Już istnieje konto o podanym PESELu"
+
+def test_update_account_success(client):
+    client.post("/api/accounts", json={
+        "first_name": "Tom",
+        "last_name": "Morawski",
+        "pesel": "12345678901"
+    })
+    response = client.patch("/api/accounts/123", json={
+        "name": "Tom",
+        "surname": "Morawski"
+    })
+
+    assert response.status_code == 200
+    assert response.get_json()["message"] == "Konto zaktualizowane"
 
 def test_incoming_transfer_ok(client, account):
     # account.pesel = "12345678901"
@@ -55,6 +83,21 @@ def test_outgoing_transfer_no_funds(client, account):
     assert response.status_code == 422
     assert response.get_json()["detail"] == "Brak wystarczających środków"
     assert account.balance == 1000
+
+def test_transfer_account_not_found(client):
+    response = client.post(
+        "/api/accounts/99999999999/transfer",
+        json={"amount": 100, "type": "incoming"}
+    )
+    assert response.status_code == 404
+    assert response.get_json()["detail"] == "Konto nie znalezione"
+
+def test_express_transfer_api(client, account):
+    account.balance = 100
+    registry.add_account(account)
+    client.post(f"/api/accounts/{account.pesel}/transfer", 
+        json={"amount": 50, "type": "outgoing", "express": True})
+    assert account.balance == 49
 
 def test_unknown_transfer_type(client, account):
     registry.accounts = []

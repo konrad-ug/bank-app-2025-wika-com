@@ -24,6 +24,12 @@ class TestPrzelew:
         assert accountt.balance == 119.0
         assert accountt.historia == [320, -200, -1]
     
+    def test_przelew_ekspresowy_osobisty(self,accountt):
+        accountt.przelew_przych(100)
+        accountt.przelew_wych(50, "e")
+        assert accountt.balance == 49
+        assert -1 in accountt.historia
+    
     def test_przelew_wych_brak_srodkow(self, accountt):
         accountt.przelew_przych(100)
         with pytest.raises(ValueError, match="Brak wystarczających środków"):

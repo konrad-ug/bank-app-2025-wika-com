@@ -13,16 +13,21 @@ def transfer(pesel):
     data = request.get_json()
     amount = data.get("amount")
     transfer_type = data.get("type")
+    is_express = data.get("express", False)
     account = registry.find_by_pesel(pesel)
     if not account:
         return jsonify({"detail": "Konto nie znalezione"}), 404
-    if transfer_type not in ["incoming", "outgoing", "express"]:
+    if transfer_type not in ["incoming", "outgoing"]:
         return jsonify({"detail": "Nieznany typ przelewu"}), 400
     try:
         if transfer_type == "incoming":
             account.przelew_przych(amount)
         elif transfer_type == "outgoing":
-            account.przelew_wych(amount,"n")
+            if is_express:
+                mode="e"
+            else:
+                mode="n"
+            account.przelew_wych(amount,mode)
         elif transfer_type == "express":
             account.przelew_wych(amount,"e")
         return jsonify({"message": "Zlecenie przyjęto"}), 200

@@ -24,7 +24,7 @@ def test_get_existing_account():
 
 def test_get_account_not_found():
     response = requests.get(f"{BASE_URL}/api/accounts/00000000000")
-    assert response.status_code == 404 # ?????
+    assert response.status_code == 404
 
 def test_update_account():
     pesel = "12345678911"
