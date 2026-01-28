@@ -34,7 +34,7 @@ def test_get_account_by_pesel_success(client):
     data = response.get_json()
     assert data["name"] == "Alicja"
     assert data["surname"] == "Nowak"
-    assert data["pesel"] == "90010112345"
+    assert data["pesel"] == "93210112345"
 
 def test_create_account_duplicate(client):
     payload={
