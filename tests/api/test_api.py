@@ -1,7 +1,7 @@
 from app.api import app, registry
 from src.PersonalAccount import PersonalAccount
 import pytest
-# import requests
+import requests
 
 @pytest.fixture
 def client():
