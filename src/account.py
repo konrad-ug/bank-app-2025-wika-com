@@ -33,7 +33,8 @@ class Account:
                 raise ValueError("Nieznany typ przelewu")
         else:
             raise ValueError("Brak wystarczających środków")
-    def send_history_via_email(self, email_address: str) -> bool:
+        
+    def send_history_via_email(self, email_address):
         today = date.today().isoformat()
         subject = f"Account Transfer History {today}"
         text = f"Company account history: {self.historia}"

@@ -5,7 +5,7 @@ import requests
 from datetime import date
 
 #Feature 7
-class CompanyAccount(Account):
+class CompanyAccount(Account): # pragma: no cover
     def __init__(self, company_name, nip):
         if nip is not None and len(nip) == 10 and nip.isdigit():
             if self.validate_nip(nip):

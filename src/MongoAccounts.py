@@ -22,10 +22,6 @@ class MongoAccountsRepository:
         db_accounts = list(self._collection.find({}))
         accounts_list = []
         for acc_data in db_accounts:
-            # if "nip" in acc_data:
-            #     acc = CompanyAccount(acc_data["name"], acc_data["nip"])
-            # else:
-            #     acc = PersonalAccount(acc_data["name"], acc_data["surname"], acc_data["pesel"])
             acc = PersonalAccount(acc_data["name"], acc_data["surname"], acc_data["pesel"])
             acc.balance = float(acc_data["balance"])
             acc.historia = acc_data.get("historia", [])
