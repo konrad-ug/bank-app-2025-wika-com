@@ -28,7 +28,6 @@ def test_create_account(client):
     assert response.get_json()["message"] == "Konto stworzone"
 
 def test_get_all_accounts(client):
-    # Dodajemy konto bezpośrednio do rejestru, żeby sprawdzić GET
     from src.PersonalAccount import PersonalAccount
     registry.add_account(PersonalAccount("Jan", "Kowalski", "12345678901"))
     

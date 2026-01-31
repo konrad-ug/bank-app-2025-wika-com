@@ -33,12 +33,6 @@ class TestKredyt:
         assert accountt.take_loan(1000) is False
         assert accountt.balance == 5000
 
-    # def test_kredyt_nieprzyznany_za_male_saldo(self, accountt):
-    #     accountt.przelew_przych(2000)
-    #     accountt.przelew_wych(1775, "n")
-    #     assert accountt.take_loan(200) is False
-    #     assert accountt.balance == 225
-
     def test_kredyt_nieprzyznany_za_male_saldo(self,accountt):
         accountt.przelew_przych(2000)
         accountt.przelew_wych(1775,"n")

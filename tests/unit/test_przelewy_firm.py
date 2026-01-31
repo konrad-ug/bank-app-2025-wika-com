@@ -3,9 +3,9 @@ import pytest
 
 class TestPrzelew:
     @pytest.fixture
-    # def accountt(self):
-    #     accountt = CompanyAccount("Netflix","1234567891")
-    #     return accountt
+    def accountt(self):
+        accountt = CompanyAccount("Netflix","1234567891")
+        return accountt
     def accountt(self, mocker):
         mock_data = {
             "result": {
