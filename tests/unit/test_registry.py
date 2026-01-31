@@ -6,22 +6,24 @@ def test_add_account_success():
     registry = AccountRegistry()
     acc = PersonalAccount("Jan", "Kowalski", "12345678901")
     registry.add_account(acc)
+    found = registry.find_by_pesel("12345678901")
 
     assert registry.count_accounts() == 1
     assert registry.find_by_pesel("12345678901") is not None
+    assert found == acc
+    assert found.first_name == "Jan"
 
-# def test_add_account_duplicate_pesel():
-#     registry = AccountRegistry()
-#     account1 = PersonalAccount("Jan", "Kowalski", "12345678902")
-#     registry.add_account(account1)
+def test_add_account_duplicate_pesel():
+    registry = AccountRegistry()
+    account1 = PersonalAccount("Jan", "Kowalski", "12345678902")
+    registry.add_account(account1)
 
-#     account2 = PersonalAccount("Anna", "Nowak", "12345678902")
-#     existing = registry.find_by_pesel(account2.pesel)
-#     assert existing is not None
-#     assert existing.first_name == "Jan"
+    account2 = PersonalAccount("Anna", "Nowak", "12345678902")
+    existing = registry.find_by_pesel(account2.pesel)
+    assert existing is not None
+    assert existing.first_name == "Jan"
 
 def test_add_duplicate_pesel_raises_error():
-    # Pokrywa linię z raise ValueError
     registry = AccountRegistry()
     acc = PersonalAccount("Jan", "Kowalski", "80010112345")
     registry.add_account(acc)
