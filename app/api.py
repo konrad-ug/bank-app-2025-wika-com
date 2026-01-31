@@ -2,48 +2,55 @@ from flask import Flask, request, jsonify
 from src.PersonalAccount import PersonalAccount
 from src.accountsRegistry import AccountRegistry
 from src.account import Account
+from src.MongoAccounts import MongoAccountsRepository
+from src.accountsRegistry import AccountRegistry
 
+#Feature 15
 app = Flask(__name__)
 registry = AccountRegistry()
 
+#Feature 17
 @app.post("/api/accounts/<pesel>/transfer")
 def transfer(pesel):
     data = request.get_json()
-
     amount = data.get("amount")
     transfer_type = data.get("type")
-
+    is_express = data.get("express", False)
     account = registry.find_by_pesel(pesel)
     if not account:
         return jsonify({"detail": "Konto nie znalezione"}), 404
-    if transfer_type not in ["incoming", "outgoing", "express"]:
+    if transfer_type not in ["incoming", "outgoing"]:
         return jsonify({"detail": "Nieznany typ przelewu"}), 400
     try:
         if transfer_type == "incoming":
             account.przelew_przych(amount)
         elif transfer_type == "outgoing":
-            account.przelew_wych(amount,"n")
+            if is_express:
+                mode="e"
+            else:
+                mode="n"
+            account.przelew_wych(amount,mode)
         elif transfer_type == "express":
             account.przelew_wych(amount,"e")
-        return jsonify({"message": "Zlecenie przyjęto do realizacji"}), 200
+        return jsonify({"message": "Zlecenie przyjęto"}), 200
     except ValueError:
         return jsonify({"detail": "Brak wystarczających środków"}), 422
     
 @app.route("/api/accounts", methods=['POST'])
 def create_account():
     data = request.get_json()
+    #Feature 16
     if registry.find_by_pesel(data["pesel"]):
         return jsonify({"message": "Już istnieje konto o podanym PESELu"}), 409
-    
-    account = PersonalAccount(data["name"], data["surname"], data["pesel"])
+    account = PersonalAccount(data["first_name"], data["last_name"], data["pesel"])
     registry.add_account(account)
     return jsonify({"message": "Konto stworzone"}), 201
 
 @app.route("/api/accounts", methods=['GET'])
 def get_all_accounts():
     accounts = registry.get_all_accounts()
-    accounts_data = [{"name": acc.first_name, "surname": acc.last_name, "pesel":acc.pesel, "balance": acc.balance} for acc in accounts]
-    return jsonify(accounts_data), 200
+    # accounts_data = [{"name": acc.first_name, "surname": acc.last_name, "pesel":acc.pesel, "balance": acc.balance} for acc in accounts]
+    return jsonify([acc.to_dict() for acc in accounts]), 200
 
 @app.route("/api/accounts/count", methods=['GET'])
 def get_account_count():
@@ -54,17 +61,24 @@ def get_account_count():
 def get_account_by_pesel(pesel):
     account = registry.find_by_pesel(pesel)
     if account:
-        return jsonify({"name": "imie"}), 200
-    return 404
+        return jsonify({
+            "first_name": account.first_name, 
+            # "name": account.first_name, 
+            "last_name": account.last_name, 
+            # "surname": account.last_name, 
+            "pesel": account.pesel, 
+            "balance": account.balance}), 200
+    return jsonify({"message": "Konto nie znalezione"}),404
     
 @app.route("/api/accounts/<pesel>", methods=['PATCH'])
 def update_account(pesel):
     data = request.get_json()
     account = registry.find_by_pesel(pesel)
-
     if account:
-        account.first_name = data["first_name"]
-        account.last_name = data["last_name"]
+        if "name" in data:
+            account.first_name = data["name"]
+        if "surname" in data:
+            account.last_name = data["surname"]
         return jsonify({"message": "Konto zaktualizowane"}), 200
     else:
         return jsonify({"message": "Konto nie znalezione"}), 404
@@ -76,11 +90,25 @@ def delete_account(pesel):
         registry.remove(account)
         return jsonify({"message": "Konto usunięte"}), 200
     else:
-        return 404
+        return ({"message": "Nie znaleziono konta do usunięcia"}),404
     
-@app.route("/api/accounts/<pesel>/transfer", methods=['POST'])
-def przelew_przych(pesel):
-    account = registry.find_by_pesel(pesel) 
-    if account is None:
-        return 404
-    
+repo = MongoAccountsRepository()
+
+@app.route("/api/accounts/save", methods=['POST'])
+def save_accounts():
+    accounts = registry.get_all_accounts()
+    repo.save_all(accounts)
+    return jsonify({"message": "Pomyślnie zapisano konta do bazy"}), 200
+
+@app.route("/api/accounts/load", methods=['POST'])
+def load_accounts():
+    accounts_from_db = repo.load_all()
+    registry.accounts = [] 
+    for acc in accounts_from_db:
+        registry.add_account(acc)
+    return jsonify({"message": f"Pomyślnie załadowano {len(accounts_from_db)}kont"}), 200
+
+@app.route("/api/accounts/clear", methods=['POST'])
+def clear_accounts():
+    registry.accounts=[]
+    return jsonify({"message": "Rejestr wyczyszczony"}), 200

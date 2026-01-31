@@ -1,13 +1,18 @@
 from src.PersonalAccount import PersonalAccount
 from src.accountsRegistry import AccountRegistry
+import pytest
 
 def test_add_account_success():
     registry = AccountRegistry()
     acc = PersonalAccount("Jan", "Kowalski", "12345678901")
     registry.add_account(acc)
+    found = registry.find_by_pesel("12345678901")
 
     assert registry.count_accounts() == 1
     assert registry.find_by_pesel("12345678901") is not None
+    assert found == acc
+    assert found.first_name == "Jan"
+    assert found.pesel == "12345678901"
 
 def test_add_account_duplicate_pesel():
     registry = AccountRegistry()
@@ -18,3 +23,39 @@ def test_add_account_duplicate_pesel():
     existing = registry.find_by_pesel(account2.pesel)
     assert existing is not None
     assert existing.first_name == "Jan"
+
+def test_add_duplicate_pesel_raises_error():
+    registry = AccountRegistry()
+    acc = PersonalAccount("Jan", "Kowalski", "80010112345")
+    registry.add_account(acc)
+    
+    with pytest.raises(ValueError, match="Już istnieje konto z takim peselem"):
+        registry.add_account(acc)
+
+def test_find_by_pesel_not_found():
+    registry = AccountRegistry()
+    assert registry.find_by_pesel("00000000000") is None
+
+def test_remove_account():
+    registry = AccountRegistry()
+    acc = PersonalAccount("Jan", "Kowalski", "12345678901")
+    registry.add_account(acc)
+    registry.remove(acc)
+    assert registry.count_accounts() == 0
+
+def test_get_all_accounts():
+    registry = AccountRegistry()
+    acc1 = PersonalAccount("Jan", "Kowalski", "12345678901")
+    acc2 = PersonalAccount("Anna", "Nowak", "12345678902")
+    registry.add_account(acc1)
+    registry.add_account(acc2)
+    all_accounts = registry.get_all_accounts()
+    assert len(all_accounts) == 2
+    assert acc1 in all_accounts
+    assert acc2 in all_accounts
+
+def test_remove_non_existent_account():
+    registry = AccountRegistry()
+    acc = PersonalAccount("Jan", "Kowalski", "12345678901")
+    registry.remove(acc) 
+    assert registry.count_accounts() == 0

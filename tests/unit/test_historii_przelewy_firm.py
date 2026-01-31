@@ -3,9 +3,20 @@ import pytest
 
 class TestPrzelew:
     @pytest.fixture
-    def accountt(self):
-        accountt = CompanyAccount("Netflix","1234567891")
-        return accountt
+    # def accountt(self):
+    #     accountt = CompanyAccount("Netflix","1234567891")
+    #     return accountt
+    
+    def accountt(self, mocker):
+        mock_response = mocker.Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"result": {"subject": {"statusVat": "Czynny"}}}
+        mock_response.text = '{"statusVat": "Czynny"}'
+        mocker.patch(
+            "src.company_account.requests.get",
+            return_value=mock_response
+        )
+        return CompanyAccount("Netflix", "1234567891")
     
     def test_hist_przych(self,accountt):
         accountt.przelew_przych(120)
@@ -23,3 +34,25 @@ class TestPrzelew:
         accountt.przelew_przych(120)
         accountt.przelew_wych(200,"e") 
         assert accountt.historia == [200,120,-200,-1]
+
+    def test_company_account_send_history(self,mocker):
+        mock_response = mocker.Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"result": {"subject": {"statusVat": "Czynny"}}}
+        mock_response.text = "OK"
+        
+        mocker.patch("src.company_account.requests.get", return_value=mock_response)
+
+        acc = CompanyAccount("Firma", "8461627563")
+        acc.historia = [5000, -1000, 500]
+
+        mock_send = mocker.patch(
+            "src.company_account.SMTPClient.send",
+            return_value=True
+        )
+
+        result = acc.send_history_via_email("firma@email.com")
+        assert result is True
+        args, _ = mock_send.call_args
+        assert args[1] == "Company account history: [5000, -1000, 500]"
+        

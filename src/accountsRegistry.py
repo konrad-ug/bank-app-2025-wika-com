@@ -1,5 +1,6 @@
 from src.PersonalAccount import PersonalAccount
 
+#Feature 14
 class AccountRegistry:
     def __init__(self):
         self.accounts = []
@@ -20,3 +21,7 @@ class AccountRegistry:
 
     def count_accounts(self):
         return len(self.accounts)
+    
+    def remove(self, account):
+        if account in self.accounts:
+            self.accounts.remove(account)

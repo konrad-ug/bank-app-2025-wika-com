@@ -1,11 +1,20 @@
 import json
-from app.api import app
+from app.api import app, registry
+import pytest
+from src.accountsRegistry import AccountRegistry
+from src.PersonalAccount import PersonalAccount
 
-def test_create_account():
-    client = app.test_client()
+@pytest.fixture
+def client():
+    app.config["TESTING"] = True
+    registry.accounts = []
+    with app.test_client() as client:
+        yield client
+
+def test_create_account(client):
     payload = {
-        "name": "james",
-        "surname": "hetfield",
+        "first_name": "james",
+        "last_name": "hetfield",
         "pesel": "89092909825"
     }
 
@@ -16,9 +25,12 @@ def test_create_account():
     )
 
     assert response.status_code == 201
-    data = response.get_json()
+    assert response.get_json()["message"] == "Konto stworzone"
 
-    assert data["name"] == "james"
-    assert data["surname"] == "hetfield"
-    assert data["pesel"] == "89092909825"
-    assert data["balance"] == 0
+def test_get_all_accounts(client):
+    from src.PersonalAccount import PersonalAccount
+    registry.add_account(PersonalAccount("Jan", "Kowalski", "12345678901"))
+    
+    response = client.get("/api/accounts")
+    assert response.status_code == 200
+    assert len(response.get_json()) == 1

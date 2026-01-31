@@ -1,0 +1,28 @@
+name: API Performance Tests
+on: [push]
+
+jobs:
+  performance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: start mongo
+        run: |
+          docker compose -f mongo.yml up -d
+          sleep 10
+      - name: Start flask
+        run: |
+          export FLASK_APP=app/api.py
+          export FLASK_ENV=development
+          export PYTHONPATH=$GITHUB_WORKSPACE
+          flask run &
+      - name: Execute Performance tests
+        run: |
+          python3 -m pytest tests/perf
