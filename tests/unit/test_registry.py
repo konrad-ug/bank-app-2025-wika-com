@@ -12,6 +12,7 @@ def test_add_account_success():
     assert registry.find_by_pesel("12345678901") is not None
     assert found == acc
     assert found.first_name == "Jan"
+    assert found.pesel == "12345678901"
 
 def test_add_account_duplicate_pesel():
     registry = AccountRegistry()
@@ -40,4 +41,21 @@ def test_remove_account():
     acc = PersonalAccount("Jan", "Kowalski", "12345678901")
     registry.add_account(acc)
     registry.remove(acc)
+    assert registry.count_accounts() == 0
+
+def test_get_all_accounts():
+    registry = AccountRegistry()
+    acc1 = PersonalAccount("Jan", "Kowalski", "12345678901")
+    acc2 = PersonalAccount("Anna", "Nowak", "12345678902")
+    registry.add_account(acc1)
+    registry.add_account(acc2)
+    all_accounts = registry.get_all_accounts()
+    assert len(all_accounts) == 2
+    assert acc1 in all_accounts
+    assert acc2 in all_accounts
+
+def test_remove_non_existent_account():
+    registry = AccountRegistry()
+    acc = PersonalAccount("Jan", "Kowalski", "12345678901")
+    registry.remove(acc) 
     assert registry.count_accounts() == 0
