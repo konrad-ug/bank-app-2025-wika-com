@@ -2,7 +2,7 @@ from src.company_account import CompanyAccount
 import pytest
 
 class TestPrzelew:
-    # @pytest.fixture
+    @pytest.fixture
     # def accountt(self):
     #     accountt = CompanyAccount("Netflix","1234567891")
     #     return accountt

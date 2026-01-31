@@ -2,10 +2,10 @@ from src.PersonalAccount import PersonalAccount
 import pytest
 
 class TestPrzelew:
-    # @pytest.fixture
-    # def accountt(self):
-    #     accountt = PersonalAccount("John", "Doe","12345678910")
-    #     return accountt
+    @pytest.fixture
+    def accountt(self):
+        accountt = PersonalAccount("John", "Doe","12345678910")
+        return accountt
     
     def test_przelew_przy(self,accountt):
         accountt.przelew_przych(120)
