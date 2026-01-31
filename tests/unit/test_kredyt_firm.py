@@ -2,10 +2,10 @@ from src.company_account import CompanyAccount
 import pytest
 
 class TestKredyt:
-    # @pytest.fixture
-    # def accountt(self):
-    #     accountt = CompanyAccount("Netflix","1234567891")
-    #     return accountt
+    @pytest.fixture
+    def accountt(self):
+        accountt = CompanyAccount("Netflix","1234567891")
+        return accountt
     @pytest.fixture
     def accountt(self, mocker):
         mock_obj = mocker.Mock()
@@ -47,3 +47,8 @@ class TestKredyt:
         accountt.przelew_wych(100,"n")
         assert accountt.take_loan(1000) == False
         assert accountt.balance == 74
+    
+    def test_brak_1775(self,accountt):
+        accountt.balance = 1000
+        accountt.historia = [100, 200]
+        assert accountt.take_loan(300) is False

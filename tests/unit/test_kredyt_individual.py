@@ -45,3 +45,7 @@ class TestKredyt:
         accountt.przelew_wych(100,"n")
         assert accountt.submit_for_loan(100) == False
         assert accountt.balance == 100
+    def test_historia_kredytu_za_krotka(self,accountt):
+        accountt.historia = [100, 200]
+        result = accountt.submit_for_loan(500)
+        assert result is False
