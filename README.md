@@ -6,7 +6,7 @@ name: Wiktoria
 
 surname:Woronecka
 
-group:2
+group: 2
 
 ## How to start the app
 
